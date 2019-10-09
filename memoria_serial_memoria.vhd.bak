@@ -1,0 +1,303 @@
+-- Quartus Prime VHDL Template
+-- Single port RAM with single read/write address 
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity memoria_serial_memoria is
+
+	generic 
+	(
+		DATA_WIDTH : natural := 8;
+		ADDR_WIDTH : natural := 6
+	);
+
+	port 
+	(
+		clk				: in std_logic;
+		reset 			: in std_logic;		
+		aciona_serial	: in std_logic;
+		addr1			: in natural range 0 to 2**ADDR_WIDTH - 1;
+		data1			: in std_logic_vector((DATA_WIDTH-1) downto 0);
+		addr2			: in natural range 0 to 2**ADDR_WIDTH - 1;
+		we1				: in std_logic := '1';
+		we2				: in std_logic := '1'
+	);
+
+end entity memoria_serial_memoria;
+
+architecture UART_serial of Memoria_UART is
+
+	subtype word_t1 is std_logic_vector((DATA_WIDTH-1) downto 0);
+	type memory_t1 is array(2**ADDR_WIDTH-1 downto 0) of word_t1;
+	signal ram1 : memory_t1;
+
+	subtype word_t2 is std_logic_vector((DATA_WIDTH-1) downto 0);
+	type memory_t2 is array(2**ADDR_WIDTH-1 downto 0) of word_t2;
+	signal ram2 : memory_t2;
+	
+	type state_type is (idle, start, intermediario, bit0, bit1, bit2, bit3, bit4, bit5, bit6, bit7, stop);
+	signal fsm   : state_type;
+	
+	
+	signal addr_reg1 : natural range 0 to 2**ADDR_WIDTH-1;
+	signal addr_reg2 : natural range 0 to 2**ADDR_WIDTH-1;
+	
+	signal baud_9600 																		: std_logic;
+	signal clock_9600 																		: integer;
+	signal clk_8 																			: integer;
+	signal clk_16 																			: integer;
+	signal pulsos8, pulsos16 																: std_logic;
+	signal ativa_serial																		: std_logic;
+	signal serial_in																		: std_logic_vector((DATA_WIDTH-1) downto 0);
+	signal serial_data, bit0, bit1, bit2, bit3, bit4, bit5, bit6, bit7, stop, rx_load 		: std_logic;
+	signal q1, q2																			:std_logic_vector((DATA_WIDTH-1) downto 0);
+	
+
+begin
+
+memoria1:	process(clk)
+	begin
+	if(rising_edge(clk)) then
+		if(we1 = '1') then
+			ram1(addr1) <= data1;
+		end if;		
+		addr_reg1 <= addr1; -- Register the address for reading
+	end if;
+	end process;
+
+	q1 <= ram1(addr_reg1);
+
+memoria2:	process(clk)
+	begin
+	if(rising_edge(clk)) then
+		if(we2 = '1') then
+			q2 <= rx_ready;
+			ram2(addr2) <= q2;
+		end if;
+		addr_reg2 <= addr2; -- Register the address for reading
+	end if;
+	end process;
+	
+divisor_de_frequencia:	process (clk)
+variable   conta_clock		   : integer :=0 ;
+		begin
+			if reset = '1' then
+				conta_clock := 0;
+				baud_9600 <= '0';
+			elsif (rising_edge(clk)) then
+				conta_clock := conta_clock + 1;
+				if conta_clock = 4 then --o valor correto é 325
+					baud_9600 <= '1';
+					conta_clock := '0';
+				else
+					baud_9600 <= '0';
+				end if;
+			end if;
+	
+		clock_9600 <= conta_clock;
+	
+end process divisor_de_frequencia;
+	
+contador_de_8_pulsos: process (clock_9600)
+	variable   conta8		   : integer := 0;
+	begin
+	if reset = '1' then
+			conta8 := 0;
+	elsif (rising_edge(clock_9600)) then
+			conta8 := conta8 + 1;			
+			if conta8 = 8 then 
+				pulso8 <= '0';
+				conta8 := 0;
+			else
+				pulso8 <= '1';
+			end if;
+	end if;
+	
+		clk_8 <= conta8;
+	
+	end process contador_de_8_pulsos;
+
+contador_de_16_pulsos: process (clock_9600)
+	variable		conta16		   : integer := 0;
+	begin
+	if reset = '1' then
+		conta16 := 0;
+	elsif (rising_edge(clock_9600)) then
+		conta16 := conta16 + 1;
+		if conta16 = 16 then
+			pulso16 <= '0';
+			conta16 := 0;
+		else
+			pulso16 <= '1';
+		end if;
+	end if;
+	
+	clk_16 <= conta16;
+
+end process contador_de_16_pulsos;
+
+
+FSM_RX: process (clk, reset)
+	begin
+	if reset = '1' then
+			fsm <= idle;
+		elsif (rising_edge(clock_9600)) then
+			case fsm is
+				when start =>
+					if serial_in = '0' then
+						fsm <= idle;
+					else
+						fsm <= intermediario;
+						serial_data <= q1;
+					end if;
+					
+				when intermediario =>
+					if pulso8 = '0' then
+						fsm <= intermediario;
+					else
+						fsm <= bit0;
+						bit0 <= serial_data;
+					end if;
+				
+				when bit0 =>
+					if pulso16 = '0' then
+						fsm <= bit0;
+					else
+						fsm <= bit1;
+						bit1 <= bit0;
+					end if;
+						
+				when bit1 =>
+					if pulso16 = '0' then
+						fsm <= bit1;
+					else
+						fsm <= bit2;
+						bit2 <= bit1;
+					end if;
+			
+				when bit2 =>
+					if pulso16 = '0' then
+						fsm <= bit2;
+					else
+						fsm <= bit3;
+						bit3 <= bit2;
+					end if;
+			
+				when bit3 =>
+					if pulso16 = '0' then
+						fsm <= bit3;
+					else
+						fsm <= bit4;
+						bit4 <= bit3;
+					end if;
+	
+				when bit4 =>
+					if pulso16 = '0' then
+						fsm <= bit4;
+					else
+						fsm <= bit5;
+						bit5 <= bit4;
+					end if;
+		
+				when bit5 =>
+					if pulso16 = '0' then
+						fsm <= bit5;
+					else
+						fsm <= bit6;
+						bit6 <= bit5;
+					end if;
+			
+				when bit6 =>
+					if pulso16 = '0' then
+						fsm <= bit6;
+					else
+						fsm <= bit7;
+						bit7 <= bit6;
+					end if;
+			
+				when bit7=>
+					if pulso16 = '0' then
+						fsm <= bit7;
+					else
+						fsm <= stop;
+						stop <= bit7;
+					end if;
+			
+				when stop=>
+					if pulso16 = '0' then
+						fsm <= stop;
+					else
+						fsm <= start;
+						rx_load <= stop;
+					end if;
+			end case;			
+		end if;
+		
+		q2 <= rx_load;
+	
+	end process FSM_RX;
+	
+FSM_TX: process (fsm)
+	begin
+		case fsm is
+			when idle =>
+				ativa_serial 	<= '0';
+				conta8 			<= '0';
+				conta16 		<= '0';
+			
+			when start =>
+				ativa_serial 	<= '1';
+				conta8 			<= '1';
+				conta16			<= '0';
+		
+			when bit0 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+		
+			when bit1 =>
+				ativa_serial 	<= '1';	
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit2 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit3 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit4 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit5 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit6 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when bit7 =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+			when stop =>
+				ativa_serial 	<= '1';
+				conta8 			<= '0';
+				conta16 		<= '1';
+				
+		end case;
+	end process;
+	aciona_serial <= ativa_serial;
+	
+end UART_serial;

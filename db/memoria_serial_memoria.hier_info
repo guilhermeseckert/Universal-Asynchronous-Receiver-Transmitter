@@ -1,0 +1,24 @@
+|memoria_serial_memoria
+address[0] => mem.RADDR
+address[0] => mem.WADDR
+address[1] => mem.RADDR1
+address[1] => mem.WADDR1
+address[2] => mem.RADDR2
+address[2] => mem.WADDR2
+address[3] => mem.RADDR3
+address[3] => mem.WADDR3
+data[0] <> data[0]
+data[1] <> data[1]
+data[2] <> data[2]
+data[3] <> data[3]
+WR => mem.WE
+RD => data[0].OE
+RD => data[1].OE
+RD => data[2].OE
+RD => data[3].OE
+RD => data_out[0].LATCH_ENABLE
+RD => data_out[1].LATCH_ENABLE
+RD => data_out[2].LATCH_ENABLE
+RD => data_out[3].LATCH_ENABLE
+
+

@@ -1,0 +1,26 @@
+
+State Machine - |memoria_serial_memoria|current_state_snd
+Name current_state_snd.stop current_state_snd.s7 current_state_snd.s6 current_state_snd.s5 current_state_snd.s4 current_state_snd.s3 current_state_snd.s2 current_state_snd.s1 current_state_snd.s0 current_state_snd.start 
+current_state_snd.start 0 0 0 0 0 0 0 0 0 0 
+current_state_snd.s0 0 0 0 0 0 0 0 0 1 1 
+current_state_snd.s1 0 0 0 0 0 0 0 1 0 1 
+current_state_snd.s2 0 0 0 0 0 0 1 0 0 1 
+current_state_snd.s3 0 0 0 0 0 1 0 0 0 1 
+current_state_snd.s4 0 0 0 0 1 0 0 0 0 1 
+current_state_snd.s5 0 0 0 1 0 0 0 0 0 1 
+current_state_snd.s6 0 0 1 0 0 0 0 0 0 1 
+current_state_snd.s7 0 1 0 0 0 0 0 0 0 1 
+current_state_snd.stop 1 0 0 0 0 0 0 0 0 1 
+
+State Machine - |memoria_serial_memoria|current_state_rec
+Name current_state_rec.stop current_state_rec.s7 current_state_rec.s6 current_state_rec.s5 current_state_rec.s4 current_state_rec.s3 current_state_rec.s2 current_state_rec.s1 current_state_rec.s0 current_state_rec.start 
+current_state_rec.start 0 0 0 0 0 0 0 0 0 0 
+current_state_rec.s0 0 0 0 0 0 0 0 0 1 1 
+current_state_rec.s1 0 0 0 0 0 0 0 1 0 1 
+current_state_rec.s2 0 0 0 0 0 0 1 0 0 1 
+current_state_rec.s3 0 0 0 0 0 1 0 0 0 1 
+current_state_rec.s4 0 0 0 0 1 0 0 0 0 1 
+current_state_rec.s5 0 0 0 1 0 0 0 0 0 1 
+current_state_rec.s6 0 0 1 0 0 0 0 0 0 1 
+current_state_rec.s7 0 1 0 0 0 0 0 0 0 1 
+current_state_rec.stop 1 0 0 0 0 0 0 0 0 1 

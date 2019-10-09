@@ -1,0 +1,53 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Guilherme/Desktop/unilasalle/Sistemas digitais/UART FINAL/simulation/modelsim
+Ememoria_serial_memoria
+Z1 w1528908830
+Z2 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
+Z3 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
+Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z5 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+R0
+Z6 8C:/Users/Guilherme/Desktop/unilasalle/Sistemas digitais/UART FINAL/memoria_serial_memoria.vhd
+Z7 FC:/Users/Guilherme/Desktop/unilasalle/Sistemas digitais/UART FINAL/memoria_serial_memoria.vhd
+l0
+L5
+VHPzObXhoLLDBFE8S2c?Ob0
+!s100 3nh7L<QVhfWk[l6[c1CV63
+Z8 OV;C;10.5b;63
+31
+Z9 !s110 1528909045
+!i10b 1
+Z10 !s108 1528909045.000000
+Z11 !s90 -reportprogress|300|-93|-work|work|C:/Users/Guilherme/Desktop/unilasalle/Sistemas digitais/UART FINAL/memoria_serial_memoria.vhd|
+Z12 !s107 C:/Users/Guilherme/Desktop/unilasalle/Sistemas digitais/UART FINAL/memoria_serial_memoria.vhd|
+!i113 1
+Z13 o-93 -work work
+Z14 tExplicit 1 CvgOpt 0
+Acomportamento
+R2
+R3
+R4
+R5
+DEx4 work 22 memoria_serial_memoria 0 22 HPzObXhoLLDBFE8S2c?Ob0
+l24
+L15
+VO`[GPPa4;OkFBGGIb<7Od0
+!s100 ^nGP9LfZbAj:O?mkD9z6o2
+R8
+31
+R9
+!i10b 1
+R10
+R11
+R12
+!i113 1
+R13
+R14
